@@ -1,0 +1,29 @@
+.form{
+    width: 40vw;
+    width: 40vw;
+    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+.form span{
+    margin: .5%;
+    font-size: 1.5vw;
+}
+.form input{
+    width: 80%;
+    margin-top: 0%;
+    margin-bottom: 0%;
+}
+.error{
+    text-align: center;
+    font-size: large
+}
+.form button:last-child{
+    width: 10vw;
+    font-size: 1.3vw;
+    text-decoration: underline;
+    font-style: italic;
+}
+

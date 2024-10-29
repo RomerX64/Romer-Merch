@@ -1,0 +1,47 @@
+.main{
+    height: 40vw;
+    width: 50vw;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    box-shadow: 0px 0px 20px black;
+}
+
+
+.sectionOrder{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;  
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.sectionOrder p{
+    text-decoration: underline;
+}
+
+.amount{
+    margin-left: auto;
+    margin-right: 2%;
+    margin-top: 2%;
+    font-size: 1vw;
+    font-style: italic;
+    display: flex;
+    flex-direction: row;
+}
+.sectionData{
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+}
+.Data{
+    border: 2px blue solid;
+    height: 100%;
+    width: 100%;
+    margin: 1%;
+
+}
