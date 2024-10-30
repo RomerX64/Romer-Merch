@@ -6,11 +6,15 @@ import Link from 'next/link'
 import { UserContext } from '@/app/Context/UserContext'
 import { useContext, useState, useEffect } from 'react'
 import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 
 
 const UserInterface = () => {
-    const {User, token, setToken, setUser} = useContext(UserContext)
+
+
+    const router = useRouter()
+    const {User, token, setToken, setUser, order} = useContext(UserContext)
     const [tokenAuxiliar, setTokenAuxiliar] = useState();
     const [UserAuxiliar, setUserAuxiliar] = useState();
 
@@ -54,7 +58,7 @@ const UserInterface = () => {
             orders:[],
         })
         localStorage.clear()
-        return redirect('/allproducts/none')
+        router.push('/allproducts/none')
     }
 
     return (
@@ -62,8 +66,8 @@ const UserInterface = () => {
         <main className={styls.body}>
             <section className={`BGC-S ${styls.section1}`}>
                 <div className={`${styls.ordersConainer}`}>
-                    {User?
-                    User.orders?.map((order)=>(
+                    {order?
+                    order?.map((order)=>(
                         <Link key={order.id} href={`/mycart/${order.id}`}>
                         <Order key={order.id} order={order}/>
                         </Link>

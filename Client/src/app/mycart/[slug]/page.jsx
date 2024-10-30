@@ -69,7 +69,7 @@ const MyCart = ({params})=>{
         totalAmount();
     }, [products]);
 
-    console.log(estaOrden)
+ 
 
     const onclickhandler = ()=>{
         return makeOrder()

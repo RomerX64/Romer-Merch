@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useState, useEffect,  } from "react";
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const UserContext = createContext()
 
@@ -57,9 +57,7 @@ const UserProvider = ({children}) =>{
         setNewOrder(updatedOrder);
         localStorage.setItem('OrderObj', JSON.stringify(updatedOrder)); 
         setItemObj(null); 
-    }, [itemObj]);
-
-    console.log(newOrder)    
+    }, [itemObj, token]);  
 
      
     useEffect(()=>{
@@ -127,50 +125,62 @@ const UserProvider = ({children}) =>{
         }   
 
 
-    useEffect(()=>{
-        const MyOrders = async () =>{
-            if(!User?.orders || !token) return
-
+        const MyOrders = async () => {
+            if (!User?.orders || !token) return;
+        
             try {
-                const res = await fetch('http://localhost:3000/users/orders',{
-                    method: 'GET',  
+                const res = await fetch('http://localhost:3000/users/orders', {
+                    method: 'GET',
                     headers: {
-                      'authorization': `${token}`  
+                        'authorization': `${token}`
                     }
-                  })
-                if(!res.ok)throw res.error;
-                const orders = await res.json()
-                
-                
-                return setOrder(orders)
-
-            }catch (error) {    
-               return console.error(error)
+                });
+        
+                if (!res.ok) throw new Error('Failed to fetch orders');
+        
+                const orders = await res.json();
+                setOrder(orders);
+            } catch (error) {
+                console.error(error);
             }
-        }
-         MyOrders()
-    },[User, token])
+        };
+        
+        useEffect(() => {
+            MyOrders(); 
+        }, [User, token]);
 
     
 
    
     const makeOrder = async ()=> {
 
-        if(!User.id) return;
+        const products = newOrderArray
         const userId = User.id
+
+        console.log(products)
+        console.log(userId)
+        console.log(token)
+
         try {
                 const res = await fetch('http://localhost:3000/orders',{
                     method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'authorization': `${token}`  
                 },
-                body: JSON.stringify({ newOrder, userId }),
+                body: JSON.stringify({ products , userId }),
                 })
+
             if(!res.ok)throw res.error;
-            const a = await res.json();
-            redirect(`/mycart/${a.id}`)  
+            const a = res.json()
+            setNewOrder(null)
+            setNewOrderArray(null)
+            localStorage.clear()
+            setOrder([...order , a])
+            router.push('/user') 
+            MyOrders()
             } catch (error) {
-                console.error(error)
+                console.error(error.message)
             }
     }
 

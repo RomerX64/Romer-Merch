@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '@/app/Context/UserContext'
 
 const Product = ({product, categorys})=>{
-    const { setItem, newOrderArray, setItemObj} = useContext(UserContext)
+    const { setItem, newOrderArray, setItemObj, token} = useContext(UserContext)
     const {name, image, price, categoryId, description, stock, id } = product
     const categories = categorys
     const [stockea, setStockea] = useState(false)
@@ -17,13 +17,16 @@ const Product = ({product, categorys})=>{
     
 
     useEffect(()=>{
-        setInOrder(newOrderArray.includes(id))
-    }, [id, newOrderArray])
-    
+        if (newOrderArray) {setInOrder(newOrderArray.includes(id))}           
+    }, [id, newOrderArray, token]);
+
+
+
     const HandleOnClickBuy = async () =>{
         setItem(id)
         setItemObj(product)
     }
+
  
 
     return (
