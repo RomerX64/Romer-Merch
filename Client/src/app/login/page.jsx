@@ -1,14 +1,19 @@
 "use client"
 
 import styls from './login.module.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link.js'
 import { useContext } from 'react'
 import { UserContext } from '../Context/UserContext'
+import { redirect } from 'next/navigation'
+
 
  const Login = ()=>{
-     const {setPath, getMyuser, token} = useContext(UserContext)
-     if(token) setPath(`/allproducts/none`)
+     const { getMyuser, token} = useContext(UserContext)
+     
+     useEffect(()=>{
+         if(token) redirect('/allproducts/none')
+     },[token])
 
     const [error, setError] = useState({
         email:'',

@@ -5,17 +5,19 @@ import styls from './user.module.css'
 import Link from 'next/link'
 import { UserContext } from '@/app/Context/UserContext'
 import { useContext } from 'react'
+import { redirect } from 'next/navigation';
+
 
 
 const UserInterface = () => {
-    const {User, setPath, setToken} = useContext(UserContext)
-    // if(!token) return setPath('/login');
-
+    const {User, token, setToken} = useContext(UserContext)
+    if(!token) return redirect('/login');
+  
     
     const HandleOnClick = () => {
         setToken(null)
         localStorage.clear()
-        return setPath('/allproducts/none')
+        return redirect('/allproducts/none')
     }
 
     return (

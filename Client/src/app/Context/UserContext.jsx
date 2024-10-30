@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useState, useEffect } from "react";
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 const UserContext = createContext()
 
@@ -9,8 +9,6 @@ const UserProvider = ({children}) =>{
     const router = useRouter()
 
     const [token, setToken] = useState(null)
-
-    
 
     const [User, setUser] = useState({
         id:'',
@@ -28,14 +26,9 @@ const UserProvider = ({children}) =>{
     const [path , setPath] = useState(null) 
 
     
-    const [order, setOrder] = useState({
-        id: '',
-		status: '',
-		date: '',
-		products:[]
-    })
+    const [order, setOrder] = useState([])
 
-    const [thisOrder, setThisOrder] = useState([])
+    const [newOrder, setNewOrder] = useState([])
 
     useEffect(()=>{
         const storedToken = localStorage.getItem('userToken');
@@ -45,7 +38,7 @@ const UserProvider = ({children}) =>{
         if (user) setUser(user)
 
         const w = localStorage.getItem('thisOrder');
-        if (w) setThisOrder(w)
+        if (w) setNewOrder(w)
 
     },[])
 
@@ -61,12 +54,8 @@ const UserProvider = ({children}) =>{
                 },
                 body: JSON.stringify({ email, password }),
             });
-            console.log(response)
 
             const json = await response.json();
-    
-            console.log(json.token);
-            console.log(json.user);
     
             setToken(json.token);
             localStorage.setItem("userToken", json.token);
@@ -103,34 +92,32 @@ const UserProvider = ({children}) =>{
 
     useEffect(()=>{
         const MyOrders = async () =>{
-            if (!User?.id) return;
-            if (!User.orders)return;
+            if(!User.orders || !token) return
+
             try {
-                const res = await fetch('http://localhost:3000/users/orders')
+                const res = await fetch('http://localhost:3000/users/orders',{
+                    method: 'GET',  
+                    headers: {
+                      'authorization': `${token}`  
+                    }
+                  })
                 if(!res.ok)throw res.error;
                 const orders = await res.json()
-                const Orders = User.orders
-                if(!Orders) throw "You don't have any order"
-                Orders.forEach(Order => {
-                    const ordersUser = orders.find(order => order.id === Order.id);
-                    
-                    if (ordersUser) {
-                       return setOrder(ordersUser)
-                    }
-                    throw "We couldn't find your orders"
-                });
-            } catch (error) {                
+                
+                
+                return setOrder(orders)
+
+            }catch (error) {    
                return console.error(error)
             }
         }
          MyOrders()
-    },[User])
-
+    },[User, token])
 
     
 
    
-    const newOrder = async ({productsId})=> {
+    const makeOrder = async ({productsId})=> {
         if(!User.id) return;
         const userId = User.id
         try {
@@ -142,11 +129,8 @@ const UserProvider = ({children}) =>{
                 body: JSON.stringify({ productsId, userId }),
                 })
             if(!res.ok)throw res.error;
-            const a = res.json;
-            localStorage.setItem('thisOrder', a)
-            setThisOrder(a)
-            return
-            
+            const a = await res.json();
+            redirect(`/mycart/${a.id}`)  
             } catch (error) {
                 console.error(error)
             }
@@ -165,13 +149,13 @@ const UserProvider = ({children}) =>{
         getMyuser,
         newUser,
         order,
-        newOrder,
+        makeOrder,
         setPath,
         setToken,
         token,
         path,
-        setThisOrder,
-        thisOrder
+        setNewOrder,
+        newOrder
     }
 
     return(
