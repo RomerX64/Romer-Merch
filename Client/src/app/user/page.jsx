@@ -14,7 +14,6 @@ const UserInterface = () => {
     const [tokenAuxiliar, setTokenAuxiliar] = useState();
     const [UserAuxiliar, setUserAuxiliar] = useState();
 
-    console.log(User)
     useEffect(() => {
         const timeoutId = setTimeout(() => {
         if (!token) {

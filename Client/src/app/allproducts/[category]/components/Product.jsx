@@ -2,11 +2,11 @@
 
 import styls from './styles/product.module.css'
 import Image from 'next/image'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '@/app/Context/UserContext'
 
 const Product = ({product, categorys})=>{
-    const {thisOrder, setThisOrder} = useContext(UserContext)
+    const { setItem, newOrderArray, setItemObj} = useContext(UserContext)
     const {name, image, price, categoryId, description, stock, id } = product
     const categories = categorys
     const [stockea, setStockea] = useState(false)
@@ -14,17 +14,15 @@ const Product = ({product, categorys})=>{
 
     const [ inOrder, setInOrder] = useState(false)
 
-    const HandleOnClickBuy = async () =>{
+    
 
-        if(thisOrder.includes(id)){
-            const a = thisOrder.filter(a => a !== id )
-            setInOrder(true)
-            setThisOrder(a)
-            return;
-        }
-        setInOrder(false)
-        setThisOrder([...thisOrder, id])
-        return;
+    useEffect(()=>{
+        setInOrder(newOrderArray.includes(id))
+    }, [id, newOrderArray])
+    
+    const HandleOnClickBuy = async () =>{
+        setItem(id)
+        setItemObj(product)
     }
  
 

@@ -1,24 +1,67 @@
 "use client"
 
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect,  } from "react";
 import { redirect, useRouter } from 'next/navigation';
 
 const UserContext = createContext()
 
 const UserProvider = ({children}) =>{
     const router = useRouter()
-
     const [token, setToken] = useState(null)
-
     const [User, setUser] = useState(null)
     const [path , setPath] = useState(null) 
+    const [order, setOrder] = useState([])
+    const [newOrder, setNewOrder] = useState([])
+    const [newOrderArray, setNewOrderArray] = useState([])
+    const [item, setItem] = useState(null)
+    const [itemObj, setItemObj] = useState(null)
+
 
     
-    const [order, setOrder] = useState([])
+    
 
-    const [newOrder, setNewOrder] = useState([])
+    
+    useEffect(() => {
+
+        const localOrder = JSON.parse(localStorage.getItem('Order')) || [];
+
+        if (!item || typeof item !== 'number') return;
+    
+        const itemExists = localOrder.includes(item);
+    
+        let updatedOrder;
+    
+        if (itemExists) {
+            updatedOrder = localOrder.filter(i => i !== item);
+        } else {
+            updatedOrder = [...localOrder, item];
+        }
+    
+        setNewOrderArray(updatedOrder);
+        localStorage.setItem('Order', JSON.stringify(updatedOrder)); 
+        setItem(null);
+    }, [item, token]);
 
 
+
+    useEffect(() => {
+        const localOrder = JSON.parse(localStorage.getItem('OrderObj')) || []; 
+    
+        if (!itemObj || typeof itemObj !== 'object' || !itemObj.id) return; 
+    
+        const itemExists = localOrder.some(existingItem => existingItem.id === itemObj.id);
+        const updatedOrder = itemExists 
+            ? localOrder.filter(existingItem => existingItem.id !== itemObj.id) 
+            : [...localOrder, itemObj];
+    
+        setNewOrder(updatedOrder);
+        localStorage.setItem('OrderObj', JSON.stringify(updatedOrder)); 
+        setItemObj(null); 
+    }, [itemObj]);
+
+    console.log(newOrder)    
+
+     
     useEffect(()=>{
         if(!User) setToken(null)
 
@@ -111,7 +154,8 @@ const UserProvider = ({children}) =>{
     
 
    
-    const makeOrder = async ({productsId})=> {
+    const makeOrder = async ()=> {
+
         if(!User.id) return;
         const userId = User.id
         try {
@@ -120,7 +164,7 @@ const UserProvider = ({children}) =>{
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ productsId, userId }),
+                body: JSON.stringify({ newOrder, userId }),
                 })
             if(!res.ok)throw res.error;
             const a = await res.json();
@@ -149,7 +193,10 @@ const UserProvider = ({children}) =>{
         token,
         path,
         setNewOrder,
-        newOrder
+        newOrder,
+        setItem,
+        setItemObj,
+        newOrderArray
     }
 
     return(

@@ -11,12 +11,14 @@ const MyCart = ({params})=>{
 
     const { slug } = use(params) ;
 
-    const { order, newOrder, token  } = useContext(UserContext)
-    const [isDisabled, setIsDisabled] = useState(false)
+    const { order, newOrder, token, makeOrder  } = useContext(UserContext)
     const [estaOrden, setestaOrden] = useState({})
     const [tokenAuxiliar, setTokenAuxiliar] = useState();
-    const [products, setProducts] = useState([])
+
     const [amount, setAmount] = useState(0)
+    const [products, setProducts] = useState([])
+    const [thisorder, setThisorder] = useState(null)
+
 
 
 
@@ -25,57 +27,53 @@ const MyCart = ({params})=>{
         const timeoutId = setTimeout(() => {
         if (!token) {
             setTokenAuxiliar(localStorage.getItem('userToken'))
-
             if(!tokenAuxiliar) {
                 redirect('/login')
             } 
         }
           return
         }, 2000); 
-    
         return () => clearTimeout(timeoutId); 
       }, [token, tokenAuxiliar]);
     
 
     useEffect(() => {
-        
-        console.log(order)
-        console.log(Number(slug))
-        const thisorder = order.find(orden => orden.id === Number(slug));
-        console.log(thisorder)
+
+        if(slug !== 'newOrder'){
+            const a = order.find(orden => orden.id === Number(slug))
+            setThisorder(a.products)
+        }else{
+            setThisorder(newOrder)
+        }
 
         if(!thisorder) return
         setestaOrden(thisorder)
-        if(thisorder.status !== "pending"){
-            setIsDisabled(true)
-        }
-        setProducts(thisorder.products)
-    }, [slug, order]);
+
+        setProducts(thisorder)
+    }, [slug, order, newOrder, thisorder]);
    
 
 
 
     useEffect(() => {
+
         const totalAmount = () => {
-            if (!products) return setIsDisabled(false);
+
             if (!products.length) return;
 
             const total = products.reduce((acc, product) => acc + product.price, 0);
+
             setAmount(total);
         };
 
         totalAmount();
     }, [products]);
 
-
+    console.log(estaOrden)
 
     const onclickhandler = ()=>{
-        return newOrder()
+        return makeOrder()
     }
-
-
-
-
 
     return(<>
         <main className={`BGC-S ${styls.main}`}>
@@ -97,15 +95,20 @@ const MyCart = ({params})=>{
             <span className={styls.amount}><p>Total amount</p>:  ${amount}</span>
             </div>
             <div className={styls.Data}> 
-                {
-                    isDisabled?
-                            (estaOrden.length > 0 ?
-                            (<p className='TXT-G'>You cannot change this order, if you think there is an error contact Support@mail.com</p>) 
-                            :
-                            (<button type='button' className='button-P TXT-G' onClick={()=> redirect('/allproducts/none')} >LETS GO BUY!!!</button>)
-                    ):
-                    (<button type='button'  onClick={onclickhandler} >Completar orden</button>)
-                }
+            {
+                estaOrden.length === 0 ?
+                (
+                    <button type='button' className='button-P TXT-G' onClick={() => redirect('/allproducts/none')}>
+                        LETS GO BUY!!!
+                    </button>
+                )
+                :
+                (
+                    <button type='button' className='button-P TXT-V' onClick={onclickhandler}>
+                        Completar orden
+                    </button>
+                )
+            }
                 
             </div>
 
