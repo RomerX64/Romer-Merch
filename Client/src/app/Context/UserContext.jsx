@@ -10,25 +10,19 @@ const UserProvider = ({children}) =>{
 
     const [token, setToken] = useState(null)
 
-    const [User, setUser] = useState({
-        id:'',
-        name:'',
-        email:'',
-        password:'',
-        address:'',
-        phone:'',
-        credential:{
-            id:'',
-            password:''
-        },
-        orders:[],
-    })
+    const [User, setUser] = useState(null)
     const [path , setPath] = useState(null) 
 
     
     const [order, setOrder] = useState([])
 
     const [newOrder, setNewOrder] = useState([])
+
+
+    useEffect(()=>{
+        if(!User) setToken(null)
+
+    },[User])
 
     useEffect(()=>{
         const storedToken = localStorage.getItem('userToken');
@@ -82,7 +76,7 @@ const UserProvider = ({children}) =>{
                 setToken(json.token)
                 localStorage.setItem("userToken", json.token)
                 setUser(json.user)
-                localStorage.setItem('User', json.user)
+                localStorage.setItem('User', JSON.stringify(json.user))
             })
             .catch((err) => console.error(err))
 
@@ -92,7 +86,7 @@ const UserProvider = ({children}) =>{
 
     useEffect(()=>{
         const MyOrders = async () =>{
-            if(!User.orders || !token) return
+            if(!User?.orders || !token) return
 
             try {
                 const res = await fetch('http://localhost:3000/users/orders',{

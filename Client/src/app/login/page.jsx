@@ -9,11 +9,14 @@ import { redirect } from 'next/navigation'
 
 
  const Login = ()=>{
-     const { getMyuser, token} = useContext(UserContext)
+     const { getMyuser, token, setUser} = useContext(UserContext)
      
      useEffect(()=>{
+        const user = JSON.parse(localStorage.getItem('User'))
+        setUser(user)
+
          if(token) redirect('/allproducts/none')
-     },[token])
+     },[setUser, token])
 
     const [error, setError] = useState({
         email:'',

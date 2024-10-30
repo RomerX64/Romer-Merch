@@ -19,7 +19,7 @@ const MyCart = ({params})=>{
     const [amount, setAmount] = useState(0)
 
 
-    console.log(estaOrden)
+
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
